@@ -1,0 +1,955 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MF PROTECH — Formulaire de découverte</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --black: #0d0d0d;
+      --white: #fafaf8;
+      --cream: #f5f3ee;
+      --sand: #e8e4da;
+      --muted: #9a9589;
+      --accent: #1a1a2e;
+      --blue: #2563eb;
+      --blue-light: #eff4ff;
+      --blue-mid: #93b4fd;
+      --success: #16a34a;
+      --success-light: #f0fdf4;
+      --border: rgba(0,0,0,0.1);
+      --radius: 12px;
+      --radius-sm: 8px;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--cream);
+      color: var(--black);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* TOP BAR */
+    .topbar {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      background: rgba(245, 243, 238, 0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 1.5rem;
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .topbar-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .topbar-logo {
+      width: 32px;
+      height: 32px;
+      background: var(--black);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .topbar-logo svg { width: 18px; height: 18px; }
+
+    .topbar-name {
+      font-size: 14px;
+      font-weight: 500;
+      letter-spacing: 0.02em;
+      color: var(--black);
+    }
+
+    .topbar-name span {
+      color: var(--muted);
+      font-weight: 300;
+    }
+
+    .topbar-steps {
+      font-size: 12px;
+      color: var(--muted);
+      font-weight: 400;
+    }
+
+    /* PROGRESS */
+    .progress-track {
+      position: fixed;
+      top: 56px; left: 0; right: 0;
+      z-index: 99;
+      height: 3px;
+      background: var(--sand);
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: var(--blue);
+      transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* MAIN */
+    main {
+      padding-top: 80px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* HERO */
+    .hero {
+      padding: 4rem 1.5rem 3rem;
+      max-width: 600px;
+      margin: 0 auto;
+      width: 100%;
+      animation: fadeUp 0.6s ease both;
+    }
+
+    .hero-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--blue);
+      background: var(--blue-light);
+      padding: 5px 12px;
+      border-radius: 99px;
+      margin-bottom: 1.5rem;
+    }
+
+    .hero-eyebrow::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--blue);
+    }
+
+    .hero h1 {
+      font-family: 'DM Serif Display', serif;
+      font-size: clamp(28px, 6vw, 40px);
+      line-height: 1.2;
+      color: var(--black);
+      margin-bottom: 1rem;
+    }
+
+    .hero h1 em {
+      font-style: italic;
+      color: var(--blue);
+    }
+
+    .hero p {
+      font-size: 15px;
+      line-height: 1.7;
+      color: #4a4a4a;
+      font-weight: 300;
+    }
+
+    /* FORM CONTAINER */
+    .form-outer {
+      flex: 1;
+      padding: 0 1.5rem 4rem;
+      max-width: 600px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    /* STEP */
+    .step {
+      display: none;
+      animation: fadeUp 0.4s ease both;
+    }
+
+    .step.active { display: block; }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .step-header {
+      margin-bottom: 2rem;
+      padding-bottom: 1.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .step-num {
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+
+    .step-title {
+      font-family: 'DM Serif Display', serif;
+      font-size: 22px;
+      color: var(--black);
+      margin-bottom: 6px;
+    }
+
+    .step-sub {
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.6;
+      font-weight: 300;
+    }
+
+    /* QUESTION BLOCK */
+    .q {
+      margin-bottom: 1.75rem;
+    }
+
+    .q-label {
+      display: block;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--black);
+      margin-bottom: 10px;
+      line-height: 1.5;
+    }
+
+    .q-label .req { color: var(--blue); margin-left: 2px; }
+
+    /* TEXT INPUTS */
+    .q input[type="text"],
+    .q input[type="number"],
+    .q textarea,
+    .q select {
+      width: 100%;
+      padding: 12px 16px;
+      border: 1.5px solid var(--sand);
+      border-radius: var(--radius-sm);
+      background: var(--white);
+      color: var(--black);
+      font-size: 14px;
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 300;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      -webkit-appearance: none;
+      appearance: none;
+    }
+
+    .q input:focus,
+    .q textarea:focus,
+    .q select:focus {
+      outline: none;
+      border-color: var(--blue-mid);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.08);
+    }
+
+    .q textarea {
+      resize: vertical;
+      min-height: 90px;
+      line-height: 1.6;
+    }
+
+    .q select {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' viewBox='0 0 24 24'%3E%3Cpath stroke='%239a9589' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      padding-right: 40px;
+      cursor: pointer;
+    }
+
+    /* CHIPS */
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .chip {
+      cursor: pointer;
+      padding: 8px 16px;
+      border-radius: 99px;
+      border: 1.5px solid var(--sand);
+      font-size: 13px;
+      font-weight: 400;
+      color: #555;
+      background: var(--white);
+      transition: all 0.15s;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .chip:hover {
+      border-color: var(--blue-mid);
+      color: var(--blue);
+    }
+
+    .chip.selected {
+      background: var(--blue-light);
+      color: var(--blue);
+      border-color: var(--blue-mid);
+      font-weight: 500;
+    }
+
+    /* RADIO */
+    .radio-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .radio-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 16px;
+      border: 1.5px solid var(--sand);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: all 0.15s;
+      background: var(--white);
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .radio-item:hover {
+      border-color: var(--blue-mid);
+      background: var(--blue-light);
+    }
+
+    .radio-item.selected {
+      border-color: var(--blue);
+      background: var(--blue-light);
+    }
+
+    .radio-item input { display: none; }
+
+    .radio-dot {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      border: 2px solid var(--sand);
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s;
+    }
+
+    .radio-item.selected .radio-dot {
+      border-color: var(--blue);
+      background: var(--blue);
+    }
+
+    .radio-item.selected .radio-dot::after {
+      content: '';
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: white;
+    }
+
+    .radio-text {
+      font-size: 14px;
+      color: var(--black);
+      font-weight: 300;
+    }
+
+    .radio-item.selected .radio-text {
+      color: var(--blue);
+      font-weight: 500;
+    }
+
+    /* NAV */
+    .nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 2.5rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border);
+    }
+
+    .btn-back {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 10px 20px;
+      border: 1.5px solid var(--sand);
+      border-radius: var(--radius-sm);
+      background: transparent;
+      color: var(--muted);
+      font-size: 14px;
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 400;
+      cursor: pointer;
+      transition: all 0.15s;
+      visibility: hidden;
+    }
+
+    .btn-back:hover {
+      background: var(--sand);
+      color: var(--black);
+    }
+
+    .btn-back svg { width: 16px; height: 16px; }
+
+    .btn-next {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 28px;
+      border: none;
+      border-radius: var(--radius-sm);
+      background: var(--black);
+      color: var(--white);
+      font-size: 14px;
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+      letter-spacing: 0.01em;
+    }
+
+    .btn-next:hover {
+      background: #333;
+      transform: translateY(-1px);
+    }
+
+    .btn-next:active { transform: scale(0.98); }
+    .btn-next svg { width: 16px; height: 16px; }
+
+    /* DOTS */
+    .step-dots {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+    }
+
+    .dot {
+      height: 6px;
+      border-radius: 99px;
+      background: var(--sand);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      width: 6px;
+    }
+
+    .dot.done {
+      background: var(--blue-mid);
+      width: 6px;
+    }
+
+    .dot.active {
+      background: var(--blue);
+      width: 20px;
+    }
+
+    /* SUCCESS */
+    .success-screen {
+      display: none;
+      text-align: center;
+      padding: 4rem 1.5rem;
+      max-width: 520px;
+      margin: 0 auto;
+      animation: fadeUp 0.6s ease both;
+    }
+
+    .success-icon {
+      width: 72px;
+      height: 72px;
+      background: var(--success-light);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1.5rem;
+    }
+
+    .success-icon svg { width: 36px; height: 36px; color: var(--success); }
+
+    .success-screen h2 {
+      font-family: 'DM Serif Display', serif;
+      font-size: 28px;
+      color: var(--black);
+      margin-bottom: 12px;
+    }
+
+    .success-screen p {
+      font-size: 15px;
+      color: #4a4a4a;
+      line-height: 1.7;
+      font-weight: 300;
+      margin-bottom: 2rem;
+    }
+
+    .success-meta {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      color: var(--muted);
+      padding: 8px 16px;
+      background: var(--sand);
+      border-radius: 99px;
+    }
+
+    .success-meta svg { width: 14px; height: 14px; }
+
+    /* FOOTER */
+    footer {
+      text-align: center;
+      padding: 1.5rem;
+      font-size: 11px;
+      color: var(--muted);
+      border-top: 1px solid var(--border);
+      letter-spacing: 0.02em;
+    }
+
+    footer a { color: var(--muted); text-decoration: none; }
+    footer a:hover { color: var(--black); }
+
+    /* MOBILE */
+    @media (max-width: 480px) {
+      .hero { padding: 2.5rem 1.25rem 2rem; }
+      .form-outer { padding: 0 1.25rem 3rem; }
+      .btn-next { padding: 12px 22px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- TOP BAR -->
+  <div class="topbar">
+    <div class="topbar-brand">
+      <div class="topbar-logo">
+        <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/>
+        </svg>
+      </div>
+      <span class="topbar-name">MF PROTECH <span>× Formulaire</span></span>
+    </div>
+    <span class="topbar-steps" id="topbar-steps">Étape 1 sur 6</span>
+  </div>
+
+  <!-- PROGRESS -->
+  <div class="progress-track">
+    <div class="progress-fill" id="progress" style="width: 16.67%"></div>
+  </div>
+
+  <main>
+
+    <!-- HERO -->
+    <section class="hero" id="hero">
+      <div class="hero-eyebrow">Confidentiel · 5 min</div>
+      <h1>Parle-moi de<br><em>ton business</em>, Marietou.</h1>
+      <p>Ce formulaire me permet de comprendre exactement comment fonctionne MF PROTECH aujourd'hui — pour te livrer un outil qui règle tes vrais problèmes, pas des suppositions.</p>
+    </section>
+
+    <!-- FORM -->
+    <div class="form-outer">
+      <div id="form-body">
+
+        <!-- STEP 1 -->
+        <div class="step active" data-step="1">
+          <div class="step-header">
+            <div class="step-num">Section 1 · Stock & produits</div>
+            <div class="step-title">Ce que tu vends</div>
+            <div class="step-sub">Donne-moi une vue claire de ton catalogue et de ton approvisionnement.</div>
+          </div>
+
+          <div class="q">
+            <label class="q-label">Quelles marques tu revends en ce moment ? <span class="req">*</span></label>
+            <div class="chips" data-key="marques">
+              <div class="chip" data-val="HP">HP</div>
+              <div class="chip" data-val="Dell">Dell</div>
+              <div class="chip" data-val="Lenovo">Lenovo</div>
+              <div class="chip" data-val="Apple">Apple</div>
+              <div class="chip" data-val="Asus">Asus</div>
+              <div class="chip" data-val="Acer">Acer</div>
+              <div class="chip" data-val="Samsung">Samsung</div>
+              <div class="chip" data-val="Autre">Autre</div>
+            </div>
+          </div>
+
+          <div class="q">
+            <label class="q-label">Combien d'ordinateurs en stock en ce moment ?</label>
+            <input type="number" placeholder="Ex: 15" data-key="stock_actuel" min="0" />
+          </div>
+
+          <div class="q">
+            <label class="q-label">Tu vends des ordis neufs, reconditionnés, ou les deux ?</label>
+            <div class="radio-list" data-key="type_ordis">
+              <label class="radio-item"><input type="radio" value="Neufs seulement" /><div class="radio-dot"></div><span class="radio-text">Neufs seulement</span></label>
+              <label class="radio-item"><input type="radio" value="Reconditionnés seulement" /><div class="radio-dot"></div><span class="radio-text">Reconditionnés seulement</span></label>
+              <label class="radio-item"><input type="radio" value="Les deux" /><div class="radio-dot"></div><span class="radio-text">Les deux</span></label>
+            </div>
+          </div>
+
+          <div class="q">
+            <label class="q-label">Combien de fournisseurs tu as ?</label>
+            <div class="radio-list" data-key="fournisseurs">
+              <label class="radio-item"><input type="radio" value="1 fournisseur" /><div class="radio-dot"></div><span class="radio-text">1 seul fournisseur</span></label>
+              <label class="radio-item"><input type="radio" value="2-3 fournisseurs" /><div class="radio-dot"></div><span class="radio-text">2 à 3 fournisseurs</span></label>
+              <label class="radio-item"><input type="radio" value="Plus de 3" /><div class="radio-dot"></div><span class="radio-text">Plus de 3</span></label>
+            </div>
+          </div>
+        </div>
+
+        <!-- STEP 2 -->
+        <div class="step" data-step="2">
+          <div class="step-header">
+            <div class="step-num">Section 2 · Gestion du stock</div>
+            <div class="step-title">Comment tu gères ton stock aujourd'hui</div>
+            <div class="step-sub">Sois honnête — c'est exactement ça qui va m'aider à te construire le bon outil.</div>
+          </div>
+
+          <div class="q">
+            <label class="q-label">Tu notes ton stock où en ce moment ? <span class="req">*</span></label>
+            <div class="radio-list" data-key="gestion_stock">
+              <label class="radio-item"><input type="radio" value="Papier" /><div class="radio-dot"></div><span class="radio-text">Papier / carnet</span></label>
+              <label class="radio-item"><input type="radio" value="Excel" /><div class="radio-dot"></div><span class="radio-text">Excel ou Google Sheets</span></label>
+              <label class="radio-item"><input type="radio" value="WhatsApp" /><div class="radio-dot"></div><span class="radio-text">WhatsApp (messages, groupes...)</span></label>
+              <label class="radio-item"><input type="radio" value="Mémoire" /><div class="radio-dot"></div><span class="radio-text">Dans ma tête 😅</span></label>
+              <label class="radio-item"><input type="radio" value="Rien" /><div class="radio-dot"></div><span class="radio-text">Rien de précis pour l'instant</span></label>
+            </div>
+          </div>
+
+          <div class="q">
+            <label class="q-label">T'as déjà promis un ordi à un client et réalisé qu'il était plus dispo ? <span class="req">*</span></label>
+            <div class="radio-list" data-key="promesse_ratee">
+              <label class="radio-item"><input type="radio" value="Oui, plusieurs fois" /><div class="radio-dot"></div><span class="radio-text">Oui, plusieurs fois</span></label>
+              <label class="radio-item"><input type="radio" value="Oui, une fois" /><div class="radio-dot"></div><span class="radio-text">Oui, une fois</span></label>
+              <label class="radio-item"><input type="radio" value="Non jamais" /><div class="radio-dot"></div><span class="radio-text">Non, jamais</span></label>
+            </div>
+          </div>
+
+          <div class="q">
+            <label class="q-label">Quand tu reçois une livraison, tu fais quoi exactement ? Décris les étapes.</label>
+            <textarea placeholder="Ex: je teste les ordis, je les note sur WhatsApp, j'envoie des photos aux clients..." data-key="process_livraison"></textarea>
+          </div>
+        </div>
+
+        <!-- STEP 3 -->
+        <div class="step" data-step="3">
+          <div class="step-header">
+            <div class="step-num">Section 3 · Canaux de vente</div>
+            <div class="step-title">Comment tu vends & tu trouves tes clients</div>
+            <div class="step-sub">Je veux comprendre où tu passes ton temps et d'où viennent tes ventes.</div>
+          </div>
+
+          <div class="q">
+            <label class="q-label">Tu vends sur quels canaux ? <span class="req">*</span></label>
+            <div class="chips" data-key="canaux_vente">
+              <div class="chip" data-val="WhatsApp Business">WhatsApp Business</div>
+              <div class="chip" data-val="Facebook Marketplace">Facebook Marketplace</div>
+              <div class="chip" data-val="Instagram">Instagram</div>
+              <div class="chip" data-val="Boutique physique">Boutique physique</div>
+              <div class="chip" data-val="Bouche à oreille">Bouche à oreille</div>
+              <div class="chip" data-val="Site web">Site web</div>
+              <div class="chip" data-val="Autre">Autre</div>
+            </div>
+          </div>
+
+          <div class="q">
+            <label class="q-label">Lequel te rapporte le plus de ventes en ce moment ?</label>
+            <select data-key="meilleur_canal">
+              <option value="">— Choisir —</option>
+              <option>WhatsApp Business</option>
+              <option>Facebook Marketplace</option>
+              <option>Instagram</option>
+              <option>Boutique physique</option>
+              <option>Bouche à oreille</option>
+              <option>Site web</option>
+            </select>
+          </div>
+
+          <div class="q">
+            <label class="q-label">Quand tu reçois du stock, tu le publies en ligne en combien de temps ?</label>
+            <div class="radio-list" data-key="delai_publication">
+              <label class="radio-item"><input type="radio" value="Moins d'1h" /><div class="radio-dot"></div><span class="radio-text">Moins d'une heure</span></label>
+              <label class="radio-item"><input type="radio" value="Le jour même" /><div class="radio-dot"></div><span class="radio-text">Le même jour</span></label>
+              <label class="radio-item"><input type="radio" value="Quelques jours" /><div class="radio-dot"></div><span class="radio-text">Quelques jours après</span></label>
+              <label class="radio-item"><input type="radio" value="Pas toujours" /><div class="radio-dot"></div><span class="radio-text">Je publie pas toujours</span></label>
+            </div>
+          </div>
+
+          <div class="q">
+            <label class="q-label">Combien de temps tu passes à publier tes annonces par semaine ?</label>
+            <div class="radio-list" data-key="temps_publication">
+              <label class="radio-item"><input type="radio" value="Moins d'1h" /><div class="radio-dot"></div><span class="radio-text">Moins d'une heure</span></label>
+              <label class="radio-item"><input type="radio" value="1-3h" /><div class="radio-dot"></div><span class="radio-text">Entre 1h et 3h</span></label>
+              <label class="radio-item"><input type="radio" value="Plus de 3h" /><div class="radio-dot"></div><span class="radio-text">Plus de 3h</span></label>
+            </div>
+          </div>
+        </div>
+
+        <!-- STEP 4 -->
+        <div class="step" data-step="4">
+          <div class="step-header">
+            <div class="step-num">Section 4 · Tes clients</div>
+            <div class="step-title">La relation avec tes clients</div>
+            <div class="step-sub">Comment ça se passe vraiment au quotidien.</div>
+          </div>
+
+          <div class="q">
+            <label class="q-label">Tu reçois combien de messages clients par jour ?</label>
+            <div class="radio-list" data-key="msgs_par_jour">
+              <label class="radio-item"><input type="radio" value="Moins de 5" /><div class="radio-dot"></div><span class="radio-text">Moins de 5</span></label>
+              <label class="radio-item"><input type="radio" value="5-15" /><div class="radio-dot"></div><span class="radio-text">Entre 5 et 15</span></label>
+              <label class="radio-item"><input type="radio" value="Plus de 15" /><div class="radio-dot"></div><span class="radio-text">Plus de 15 — c'est beaucoup 😅</span></label>
+            </div>
+          </div>
+
+          <div class="q">
+            <label class="q-label">T'as des clients fidèles qui reviennent souvent ?</label>
+            <div class="radio-list" data-key="clients_fideles">
+              <label class="radio-item"><input type="radio" value="Oui, beaucoup" /><div class="radio-dot"></div><span class="radio-text">Oui, beaucoup</span></label>
+              <label class="radio-item"><input type="radio" value="Quelques-uns" /><div class="radio-dot"></div><span class="radio-text">Quelques-uns</span></label>
+              <label class="radio-item"><input type="radio" value="Pas vraiment" /><div class="radio-dot"></div><span class="radio-text">Pas vraiment</span></label>
+            </div>
+          </div>
+
+          <div class="q">
+            <label class="q-label">T'as déjà eu un client qui t'a dit "je savais pas que t'avais ça" alors que t'avais l'ordi en stock ?</label>
+            <div class="radio-list" data-key="vente_ratee_visibilite">
+              <label class="radio-item"><input type="radio" value="Oui, c'est arrivé" /><div class="radio-dot"></div><span class="radio-text">Oui, c'est déjà arrivé</span></label>
+              <label class="radio-item"><input type="radio" value="Probablement" /><div class="radio-dot"></div><span class="radio-text">Probablement, mais j'en sais rien</span></label>
+              <label class="radio-item"><input type="radio" value="Non" /><div class="radio-dot"></div><span class="radio-text">Non</span></label>
+            </div>
+          </div>
+
+          <div class="q">
+            <label class="q-label">Tu gardes les contacts de tes clients quelque part ?</label>
+            <div class="radio-list" data-key="gestion_contacts">
+              <label class="radio-item"><input type="radio" value="Oui organisé" /><div class="radio-dot"></div><span class="radio-text">Oui, j'ai une liste organisée</span></label>
+              <label class="radio-item"><input type="radio" value="Dans WhatsApp" /><div class="radio-dot"></div><span class="radio-text">Juste dans mes contacts WhatsApp</span></label>
+              <label class="radio-item"><input type="radio" value="Pas vraiment" /><div class="radio-dot"></div><span class="radio-text">Pas vraiment</span></label>
+            </div>
+          </div>
+        </div>
+
+        <!-- STEP 5 -->
+        <div class="step" data-step="5">
+          <div class="step-header">
+            <div class="step-num">Section 5 · Finances & suivi</div>
+            <div class="step-title">Les chiffres de ton business</div>
+            <div class="step-sub">On parle franchement — pas de jugement, juste des faits.</div>
+          </div>
+
+          <div class="q">
+            <label class="q-label">Tu suis tes ventes quelque part ? <span class="req">*</span></label>
+            <div class="radio-list" data-key="suivi_ventes">
+              <label class="radio-item"><input type="radio" value="Carnet papier" /><div class="radio-dot"></div><span class="radio-text">Carnet papier</span></label>
+              <label class="radio-item"><input type="radio" value="Excel" /><div class="radio-dot"></div><span class="radio-text">Excel ou Google Sheets</span></label>
+              <label class="radio-item"><input type="radio" value="Rien" /><div class="radio-dot"></div><span class="radio-text">Rien pour l'instant</span></label>
+            </div>
+          </div>
+
+          <div class="q">
+            <label class="q-label">Tu sais combien d'ordis tu as vendus le mois dernier ?</label>
+            <div class="radio-list" data-key="connait_ventes_mois">
+              <label class="radio-item"><input type="radio" value="Oui exactement" /><div class="radio-dot"></div><span class="radio-text">Oui, exactement</span></label>
+              <label class="radio-item"><input type="radio" value="À peu près" /><div class="radio-dot"></div><span class="radio-text">À peu près</span></label>
+              <label class="radio-item"><input type="radio" value="Non" /><div class="radio-dot"></div><span class="radio-text">Non, je saurais pas te dire</span></label>
+            </div>
+          </div>
+
+          <div class="q">
+            <label class="q-label">En fin de mois, tu sais si t'as gagné ou perdu de l'argent ?</label>
+            <div class="radio-list" data-key="visibilite_finances">
+              <label class="radio-item"><input type="radio" value="Oui toujours" /><div class="radio-dot"></div><span class="radio-text">Oui, toujours</span></label>
+              <label class="radio-item"><input type="radio" value="Parfois" /><div class="radio-dot"></div><span class="radio-text">Parfois</span></label>
+              <label class="radio-item"><input type="radio" value="Pas vraiment" /><div class="radio-dot"></div><span class="radio-text">Pas vraiment</span></label>
+            </div>
+          </div>
+        </div>
+
+        <!-- STEP 6 -->
+        <div class="step" data-step="6">
+          <div class="step-header">
+            <div class="step-num">Section 6 · Douleurs & vision</div>
+            <div class="step-title">Ce que tu ressens vraiment 🔥</div>
+            <div class="step-sub">La section la plus importante. Ces réponses vont tout changer pour toi.</div>
+          </div>
+
+          <div class="q">
+            <label class="q-label">C'est quoi la tâche que tu détestes le plus dans ton business ? <span class="req">*</span></label>
+            <textarea placeholder="Sois honnête — cette réponse va directement influencer ce que je vais te construire..." data-key="tache_detestee"></textarea>
+          </div>
+
+          <div class="q">
+            <label class="q-label">C'est quoi qui te fait perdre le plus de temps chaque semaine ?</label>
+            <textarea placeholder="Ex: répondre aux mêmes questions, publier les annonces, noter le stock..." data-key="perte_temps"></textarea>
+          </div>
+
+          <div class="q">
+            <label class="q-label">Si tu pouvais déléguer UNE seule chose à une machine, ce serait quoi ?</label>
+            <input type="text" placeholder="Ex: publier mes annonces automatiquement" data-key="delegation_ideale" />
+          </div>
+
+          <div class="q">
+            <label class="q-label">Dans 6 mois, tu te vois où avec MF PROTECH ?</label>
+            <textarea placeholder="Partage ta vision, tes objectifs, tes ambitions..." data-key="vision_6mois"></textarea>
+          </div>
+
+          <div class="q">
+            <label class="q-label">Si t'avais 2h de plus par jour libérées, tu ferais quoi ?</label>
+            <input type="text" placeholder="Ta réponse..." data-key="deux_h_libres" />
+          </div>
+        </div>
+
+      </div>
+
+      <!-- SUCCESS -->
+      <div class="success-screen" id="success">
+        <div class="success-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>
+          </svg>
+        </div>
+        <h2>Merci Marietou 🙏</h2>
+        <p>Tes réponses m'ont tout dit. Je vais pouvoir te construire exactement ce dont MF PROTECH a besoin — pas des suppositions, la vraie solution à tes vrais problèmes.</p>
+        <div class="success-meta">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+          </svg>
+          Réponses enregistrées · Confidentielles
+        </div>
+      </div>
+
+      <!-- NAV -->
+      <div class="nav" id="nav">
+        <button class="btn-back" id="btn-back" onclick="prevStep()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+          Retour
+        </button>
+        <div class="step-dots" id="dots"></div>
+        <button class="btn-next" id="btn-next" onclick="nextStep()">
+          <span id="btn-label">Suivant</span>
+          <svg id="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+        </button>
+      </div>
+
+    </div>
+  </main>
+
+  <footer>
+    <p>Formulaire confidentiel · MF PROTECH × <a href="#">Semou</a> · Dakar, Sénégal</p>
+  </footer>
+
+  <script>
+    const TOTAL = 6;
+    let current = 1;
+    const answers = {};
+
+    function renderDots() {
+      const c = document.getElementById('dots');
+      c.innerHTML = '';
+      for (let i = 1; i <= TOTAL; i++) {
+        const d = document.createElement('div');
+        if (i < current) d.className = 'dot done';
+        else if (i === current) d.className = 'dot active';
+        else d.className = 'dot';
+        c.appendChild(d);
+      }
+    }
+
+    function updateUI() {
+      const pct = (current / TOTAL) * 100;
+      document.getElementById('progress').style.width = pct + '%';
+      document.getElementById('topbar-steps').textContent = 'Étape ' + current + ' sur ' + TOTAL;
+      document.getElementById('btn-back').style.visibility = current > 1 ? 'visible' : 'hidden';
+      const isLast = current === TOTAL;
+      document.getElementById('btn-label').textContent = isLast ? 'Envoyer' : 'Suivant';
+      const icon = document.getElementById('btn-icon');
+      if (isLast) {
+        icon.innerHTML = '<polyline points="22 2 15 22 11 13 2 9 22 2"/>';
+      } else {
+        icon.innerHTML = '<polyline points="9 18 15 12 9 6"/>';
+      }
+      renderDots();
+    }
+
+    function collectStep(step) {
+      const el = document.querySelector('.step[data-step="' + step + '"]');
+      el.querySelectorAll('[data-key]').forEach(function(inp) {
+        const k = inp.dataset.key;
+        if (inp.classList.contains('chips')) {
+          answers[k] = [...inp.querySelectorAll('.chip.selected')].map(function(c) { return c.dataset.val; }).join(', ');
+        } else if (inp.classList.contains('radio-list')) {
+          const sel = inp.querySelector('.radio-item.selected input');
+          if (sel) answers[k] = sel.value;
+        } else {
+          answers[k] = inp.value;
+        }
+      });
+    }
+
+    function nextStep() {
+      collectStep(current);
+      if (current < TOTAL) {
+        document.querySelector('.step[data-step="' + current + '"]').classList.remove('active');
+        current++;
+        const next = document.querySelector('.step[data-step="' + current + '"]');
+        next.classList.add('active');
+        next.style.animation = 'none';
+        next.offsetHeight;
+        next.style.animation = '';
+        updateUI();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } else {
+        document.getElementById('form-body').style.display = 'none';
+        document.getElementById('nav').style.display = 'none';
+        document.getElementById('hero').style.display = 'none';
+        document.getElementById('success').style.display = 'block';
+        document.getElementById('progress').style.width = '100%';
+        document.getElementById('topbar-steps').textContent = 'Complété ✓';
+        console.log('Réponses Marietou:', JSON.stringify(answers, null, 2));
+      }
+    }
+
+    function prevStep() {
+      if (current > 1) {
+        document.querySelector('.step[data-step="' + current + '"]').classList.remove('active');
+        current--;
+        document.querySelector('.step[data-step="' + current + '"]').classList.add('active');
+        updateUI();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    }
+
+    document.querySelectorAll('.chips').forEach(function(group) {
+      group.querySelectorAll('.chip').forEach(function(chip) {
+        chip.addEventListener('click', function() { chip.classList.toggle('selected'); });
+      });
+    });
+
+    document.querySelectorAll('.radio-list').forEach(function(group) {
+      group.querySelectorAll('.radio-item').forEach(function(item) {
+        item.addEventListener('click', function() {
+          group.querySelectorAll('.radio-item').forEach(function(i) { i.classList.remove('selected'); });
+          item.classList.add('selected');
+          item.querySelector('input').checked = true;
+        });
+      });
+    });
+
+    updateUI();
+  </script>
+
+</body>
+</html>
